@@ -8,56 +8,46 @@
 from bs4 import BeautifulSoup
 import urllib, http.cookiejar
 import requests
-
-base_url = "https://www.packtpub.com/"
-get_url = "https://www.packtpub.com/packt/offers/free-learning"
-header = {'User-Agent':'Mozilla/5.0'}
-r=requests.post(get_url,headers=header)
-r.encoding='utf-8'
-
-bs4_packt = BeautifulSoup(r.text,"html.parser")
-# 무료책 받는 url
-getBook_url = base_url+bs4_packt.find('a',attrs={'class':'twelve-days-claim'})['href']
-print(getBook_url)
-
-#### 로그인해서 파일 받아오기
+import PyQt5
 
 #사용자정보
-user_email = 'forteleaf@hotmail.com'
-user_pass = 'shuria40'
+user_email = ''
+user_pass = ''
 
-# Cookie 를 저장
-cj = http.cookiejar.LWPCookieJar()
-opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
-opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-urllib.request.install_opener(opener)
+# geturl and getbook
+def getbook(email, password):
+    base_url = "https://www.packtpub.com/"
+    authentication_url = "https://www.packtpub.com/packt/offers/free-learning"
+    header = {'User-Agent':'Mozilla/5.0'}
+    r=requests.post(authentication_url,headers=header)
+    r.encoding='utf-8'
 
-authentication_url = 'https://www.packtpub.com/packt/offers/free-learning'
-# authentication_url = getBook_url
+    # 무료책 받는 url 찾기
+    bs4_packt = BeautifulSoup(r.text,"html.parser")
+    getBook_url = base_url+bs4_packt.find('a',attrs={'class':'twelve-days-claim'})['href']
 
-value = {
-    'op':'Login',
-    'email': user_email,
-    'password': user_pass
-}
+    # Cookie 를 저장
+    cj = http.cookiejar.LWPCookieJar()
+    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
+    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+    urllib.request.install_opener(opener)
 
-data = urllib.parse.urlencode(value)
-data = data.encode('UTF-8')
-req = urllib.request.Request(authentication_url, data)
-resp = urllib.request.urlopen(req)
-# res = opener.open(req)
-cookie = resp.headers.get('Set-Cookie')
-# res = opener.open(getBook_url)
-print(cookie)
+    # 정보입력
+    value = {
+        'op':'Login',
+        'email': user_email,
+        'password': user_pass
+    }
 
-contents = resp.read()
-#확인용
-print(contents)
+    data = urllib.parse.urlencode(value)
+    data = data.encode('UTF-8')
+    req = urllib.request.Request(authentication_url, data)
+    resp = urllib.request.urlopen(req)
+    cookie = resp.headers.get('Set-Cookie')
 
-# url = "http://www.pixiv.net/member_illust.php?mode=big&illust_id=29525941"
-# req = urllib2.Request(url)
-# req.add_header("Referer", "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=29525941")
-# res = opener.open(req)
-#
-# html = read.read()
-# print(html)
+    contents = resp.read()
+
+    #확인용
+    # print(getBook_url)
+    # print(cookie)
+    # print(contents)
