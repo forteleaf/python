@@ -48,6 +48,7 @@ def getbook(email, password):
     # print(cookie)
 # print(contents)
 
+print('packtpub 무료책을 자동으로 받아오기')
 #사용자정보
 user_email = input("email 을 입력해 주세요.\n")
 #email 형식 체크
