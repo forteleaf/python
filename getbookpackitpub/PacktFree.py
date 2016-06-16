@@ -1,21 +1,17 @@
-# 컨셉은 로그인 쿠키를 저장하고 이를 갖고 버튼을 눌러지게 하는 방법
 # https://www.packtpub.com/packt/offers/free-learning 무료로 받는 곳 주소
 # 2016.06.14 https://www.packtpub.com/freelearning-claim/20039/21478
 # 2016.06.15 https://www.packtpub.com/freelearning-claim/14254/21478
 # 2016.06.16 https://www.packtpub.com//freelearning-claim/16590/21478
 
-# 파이선
 from bs4 import BeautifulSoup
+import sys
 import urllib, http.cookiejar
 import requests
-import PyQt5
-
-#사용자정보
-user_email = ''
-user_pass = ''
+import re
 
 # geturl and getbook
 def getbook(email, password):
+    print("free-learing 주소를 얻어 오는 중...")
     base_url = "https://www.packtpub.com/"
     authentication_url = "https://www.packtpub.com/packt/offers/free-learning"
     header = {'User-Agent':'Mozilla/5.0'}
@@ -35,10 +31,11 @@ def getbook(email, password):
     # 정보입력
     value = {
         'op':'Login',
-        'email': user_email,
-        'password': user_pass
+        'email': email,
+        'password': password
     }
 
+    print('책 얻어오는 중...')
     data = urllib.parse.urlencode(value)
     data = data.encode('UTF-8')
     req = urllib.request.Request(authentication_url, data)
@@ -46,8 +43,19 @@ def getbook(email, password):
     cookie = resp.headers.get('Set-Cookie')
 
     contents = resp.read()
-
     #확인용
     # print(getBook_url)
     # print(cookie)
-    # print(contents)
+# print(contents)
+
+#사용자정보
+user_email = input("email 을 입력해 주세요.\n")
+#email 형식 체크
+EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
+if not EMAIL_REGEX.match(user_email) or user_email == "":
+    print('email이 형식이 틀렸습니다..')
+    sys.exit()
+user_pass = input('비밀번호를 입력해 주세요.\n')
+
+getbook = getbook(user_email,user_pass)
+print("완료 되었습니다.")
