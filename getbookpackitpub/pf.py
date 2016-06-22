@@ -11,13 +11,14 @@ import requests
 import re
 
 # geturl and getbook
-def getbook(email, password):
-    session = requests.session()
 
+base_url = "https://www.packtpub.com/"
+authentication_url = "https://www.packtpub.com/packt/offers/free-learning"
+header = {'User-Agent': 'Mozilla/5.0'}
+
+
+def getFreebookURL():
     print("free-learing 주소를 얻어 오는 중...")
-    base_url = "https://www.packtpub.com/"
-    authentication_url = "https://www.packtpub.com/packt/offers/free-learning"
-    header = {'User-Agent': 'Mozilla/5.0'}
     r = requests.post(authentication_url, headers=header)
     r.encoding = 'utf-8'
 
@@ -25,42 +26,24 @@ def getbook(email, password):
     bs4_packt = BeautifulSoup(r.text, "html.parser")
     getBook_url = base_url + bs4_packt.find('a', attrs={'class': 'twelve-days-claim'})['href']
     print("freelearning-claim url : " + getBook_url)
+    return getBook_url
 
-    # Cookie 를 저장
-    cj = http.cookiejar.LWPCookieJar()
-    opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
-    opener.addheaders = [('User-agent', 'Mozilla/5.0')]
-    urllib.request.install_opener(opener)
-
+def getbook(email, password):
     # 정보입력
     value = {
         'op': 'Login',
         'email': email,
         'password': password
-        'form_build_id': '',
-        'form_id': 'packt_user_login_form'
     }
+    getBook_url = "https://www.packtpub.com//freelearning-claim/17415/21478"
 
-    print('책 얻어오는 중...')
-    data = urllib.parse.urlencode(value)
-    data = data.encode('UTF-8')
-    req = urllib.request.Request(base_url, data)
-    resp = urllib.request.urlopen(req)
-    # resp = opener.open(req)
+    # POST LOGIN
+    session = requests.session()
+    response = session.post(authentication_url,headers=header,data=value)
+    if (response.status_code is not 200):
+        raise requests.exceptions.RequestException("login failed! ")
 
-    cookie = resp.headers.get('Set-Cookie')
-    contents = resp.read()
-
-    # 확인용
-    print(getBook_url)
-    print(cookie)
-    # print(contents)
-
-    # request = urllib.request.Request(getBook_url)
-    # response = urllib.request.urlopen(request)
-    #
-    request = urllib.request.Request(getBook_url)
-    response = opener.open(req)
+    session.get(getBook_url,timeout=10)
 
 print('packtpub 무료책을 자동으로 받아오기')
 # 사용자정보
