@@ -10,10 +10,9 @@ import http.cookiejar
 import requests
 import re
 
-# geturl and getbook
-def getbook(email, password):
-    session = requests.session()
 
+# geturl and getbook
+def getbook():
     print("free-learing 주소를 얻어 오는 중...")
     base_url = "https://www.packtpub.com/"
     authentication_url = "https://www.packtpub.com/packt/offers/free-learning"
@@ -23,54 +22,51 @@ def getbook(email, password):
 
     # 무료책 받는 url 찾기
     bs4_packt = BeautifulSoup(r.text, "html.parser")
-    getBook_url = base_url + bs4_packt.find('a', attrs={'class': 'twelve-days-claim'})['href']
-    print("freelearning-claim url : " + getBook_url)
+    getBook_url = base_url + str(bs4_packt.find('a', attrs={'class': 'twelve-days-claim'})['href'])
+    print(getBook_url)
 
     # Cookie 를 저장
     cj = http.cookiejar.LWPCookieJar()
     opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(cj))
     opener.addheaders = [('User-agent', 'Mozilla/5.0')]
     urllib.request.install_opener(opener)
-
     # 정보입력
     value = {
         'op': 'Login',
-        'email': email,
-        'password': password
-        'form_build_id': '',
-        'form_id': 'packt_user_login_form'
+        'email': 'forteleaf@gmail.com',
+        'password': 'shuria40',
+        'form_id':'packt_user_login_form'
     }
 
-    print('책 얻어오는 중...')
-    data = urllib.parse.urlencode(value)
-    data = data.encode('UTF-8')
-    req = urllib.request.Request(base_url, data)
-    resp = urllib.request.urlopen(req)
-    # resp = opener.open(req)
-
-    cookie = resp.headers.get('Set-Cookie')
-    contents = resp.read()
+    print('책 얻어오는 중...'+getBook_url)
+    data = urllib.parse.urlencode(value).encode("utf-8")
+    # req = urllib.request.Request(authentication_url, data=data)
+    # req.add_header('User-agent', 'Mozilla/5.0')
+    conn = opener.open(authentication_url, data)
+    # res = urllib.request.urlopen
 
     # 확인용
-    print(getBook_url)
-    print(cookie)
+    # cookie = res.headers.get('Set-Cookie')
+    # contents = conn.read()
+    # print(contents)
+    # print(getBook_url)
+    # print(cookie)
     # print(contents)
 
-    # request = urllib.request.Request(getBook_url)
-    # response = urllib.request.urlopen(request)
-    #
-    request = urllib.request.Request(getBook_url)
-    response = opener.open(req)
+    conn = opener.open(getBook_url)
+
+    # reqbuy = urllib.request.Request(getBook_url)
+    # res = opener.open(reqbuy)
+
 
 print('packtpub 무료책을 자동으로 받아오기')
-# 사용자정보
+# # 사용자정보
 # user_email = input("email 을 입력해 주세요.\n")
-# email 형식 체크
+# # email 형식 체크
 # EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
 # if not EMAIL_REGEX.match(user_email) or user_email == "":
-#     print('email이 형식이 틀렸습니다..')
+#     print('email 형식이 틀렸습니다..')
 #     sys.exit()
 # user_pass = input('비밀번호를 입력해 주세요.\n')
-# getbook = getbook(user_email, user_pass)
-getbook = getbook("forteleaf@gmail.com", "shuria40")
+getbook()
 print("완료 되었습니다.")
