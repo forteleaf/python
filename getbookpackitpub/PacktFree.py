@@ -10,9 +10,8 @@ import http.cookiejar
 import requests
 import re
 
-
 # geturl and getbook
-def getbook():
+def getbook(email, password):
     print("free-learing 주소를 얻어 오는 중...")
     base_url = "https://www.packtpub.com/"
     authentication_url = "https://www.packtpub.com/packt/offers/free-learning"
@@ -33,8 +32,8 @@ def getbook():
     # 정보입력
     value = {
         'op': 'Login',
-        'email': 'forteleaf@gmail.com',
-        'password': 'shuria40',
+        'email': email,
+        'password': password,
         'form_id':'packt_user_login_form'
     }
 
@@ -60,13 +59,13 @@ def getbook():
 
 
 print('packtpub 무료책을 자동으로 받아오기')
-# # 사용자정보
-# user_email = input("email 을 입력해 주세요.\n")
-# # email 형식 체크
-# EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
-# if not EMAIL_REGEX.match(user_email) or user_email == "":
-#     print('email 형식이 틀렸습니다..')
-#     sys.exit()
-# user_pass = input('비밀번호를 입력해 주세요.\n')
-getbook()
+# 사용자정보
+user_email = input("email 을 입력해 주세요.\n")
+# email 형식 체크
+EMAIL_REGEX = re.compile(r"[^@]+@[^@]+\.[^@]+")
+if not EMAIL_REGEX.match(user_email) or user_email == "":
+    print('email 형식이 틀렸습니다..')
+    sys.exit()
+user_pass = input('비밀번호를 입력해 주세요.\n')
+getbook(user_email, user_pass)
 print("완료 되었습니다.")
